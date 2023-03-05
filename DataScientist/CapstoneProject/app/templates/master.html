@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Post Indicator Valve Optimization</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+
+<body>
+
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="/">Post Indicator Valves</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li><a href="https://www.udacity.com/">Made with Udacity</a></li>
+                <li><a href="https://github.com/">Contact</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
+<div class="jumbotron">
+    <div class="container">
+        <h1 class="text-center">Post Indicator Valves</h1>
+        <p class="text-center">Optimizing the number of Post Indicator Valves (maximum 3 users between valves)</p>
+        <p>The RL environment only requires pipe loops numbers. See below. The numbers should be arranged in a consistence order; i.e., clockwise.</p>
+        <pre>
+for l1 = [1,2,3,4,6,21,7,8,9,20,10,11] # clockwise
+    l2 = [21,6,17,18,19,15,16,8,7]
+    l3 = [12,10,20,9,8,16,15,14,13]
+    l4 = [100,101,3,2,1]
+    l5 = [14,15,19,110,111]
+    loops = [l1, l2, l3, l4, l5]
+Enter: 
+<code>[[1,2,3,4,6,21,7,8,9,20,10,11], [21,6,17,18,19,15,16,8,7], [12,10,20,9,8,16,15,14,13], [100,101,3,2,1], [14,15,19,110,111]]</code></pre>
+        <hr />
+      
+        <div class="row">
+            <div class="col-lg-12 form-group-lg">
+                {% block title %}
+                <form action="/go" method="get">
+                    <input type="text" class="form-control form-control-lg" name="query" placeholder="Enter the loop input (list of lists, ex. [[1,2,3],[4,5,6]])">
+                    <div class="col-lg-offset-5">
+                        <button type="submit" class="btn btn-lg btn-success">Enter Loops</button>
+                    </div>
+                </form>
+                {% endblock %}
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="container">
+    <div class="page-header">
+        <h1 class="text-center">Reinforcement Learning Application Example</h1>
+    </div>
+</div>
+<div class="container">
+
+    <div class="row row-offcanvas row-offcanvas-right">
+
+      <div class="col-xs-12 col-sm-12">
+        {% block message %}
+        <div class="jumbotron">
+          <p>Post indicator valves (PIVs) are above-ground access and operator valves used for automatic sprinkler systems and wet standpipe systems whose main water supply valves are located underground. PIVs may be placed in either a paved or a landscaped area and are often close to the fire department connection. A post indicator valve makes it far easier to read and operate a control valve that has been placed underground. Should a leak or break occur, the PIV can help quickly shut off the water so that no serious damage is done. For a large plant site, local regulations or the plant owner often require PIVs at multiple locations to isolate maximum 3~5 users. Users include fire hydrant, standpipe, sprinkler system, water spray system, and foam system.</p>
+        </div>
+        {% endblock %}
+        <div class="row">
+          <div class="col-xs-6 col-lg-6">
+             <img src="{{ url_for('static', filename='image/p1.jpg')}}" class="img-thumbnail" width=700 alt="PIValve">
+          </div><!--/.col-xs-6.col-lg-6-->
+    
+          {% block content %}
+    
+          <div class="col-xs-6 col-lg-6">
+            <h2>Rules</h2>
+            <p>To satisfy the maintenance requirements, the engineer manually marks the PIV locations on Piping and Instrumentation Drawing (P&ID), which does not guarantee the optimal number of PIVs. The following picture is a simple sketch showing pipelines, users and joints. </p>
+          </div><!--/.col-xs-6.col-lg-6-->
+          <div class="col-xs-6 col-lg-6">
+            <h2>Users and Valves</h2>
+            <p>From the sketch on left, the potential PIV locations are between users (nodes). For example, a PIV is marked in blue between User 12 and User 10. We can find another PIV between User 13 and User 14. Those two PIVs can isolate User 12 and 13 for emergency or maintenance. Joints are also numbered and found in the line junctions; for example, nodes 1, 3, 18, etc. This P&ID satisfies a ‘no more than 4 users between PIVs’ rule. Let’s examine the middle area. The 3 users 20, 9, and 7 can be effectively isolated by PIVs. This figure was obtained after solving the problem using the afore-mentioned TD(0) Actor-Critic algorithm. You can find the source code at my github repository <a>https://github.com/skim21/Actor-Critic_Post-Indicator-Valve</a>.</p>
+          </div><!--/.col-xs-6.col-lg-6-->
+          <div class="col-xs-6 col-lg-6">
+            <h2>Solution Example</h2>
+            <p>In the check-up process, the number of users (except joints) between PIVs are counted and compared with the limit, in the example on left, 3. The actions are valve placement-1; or empty-0 through the dictionary keys of valve locations in order. The following shows the solution. No PIV between User 1 and 2, 2 and 3, … and PIVs between User 7 and 21, 10 and 11, … Total number of PIVs that are used to successfully integrate the system is 11 out of total 28 potential locations.
+            </p>
+            <pre>
+   {(1, 2): 0, 
+    (2, 3): 0, 
+    (3, 4): 0, 
+    (4, 6): 0, 
+    (6, 21): 0, 
+    (7, 21): 1, 
+    (7, 8): 0, 
+    (8, 9): 0, 
+    (9,20): 0, 
+    (10, 20): 0, 
+    (10, 11): 1, 
+    (1, 11): 1, 
+    (6, 17): 1, 
+    (17, 18): 0, 
+    (18, 19): 0, 
+    (15, 19): 0, 
+    (15, 16): 0, 
+    (8, 16): 1, 
+    (10, 12): 1, 
+    (14, 15): 0, 
+    (13, 14): 1, 
+    (12, 13): 0, 
+    (100, 101): 0, 
+    (3, 101): 1, 
+    (1, 100): 1, 
+    (19, 110): 1, 
+    (110, 111): 0, 
+    (14, 111): 1}                
+            </pre>
+          </div><!--/.col-xs-6.col-lg-6-->
+          {% endblock %}
+        </div>
+      </div>
+    </div>
+</div>
+
+</body>
+</html>

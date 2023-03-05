@@ -1,0 +1,36 @@
+{% extends "master.html" %}
+<hr />
+
+{% block message %}
+
+{% endblock %}
+</p>
+{% block title %}{% endblock %}
+
+{% block content %}
+<div class="col-xs-6 col-lg-6">
+    <h2 class="text-center">Valve Optimization Result</h2>
+    <div>
+        {% for q in query %}
+        <div>
+            Loop {{i}}: {{q}}<br>
+        </div>
+        {% endfor %}<br>
+    </div>
+    <div>
+        <p>
+            Total {{no_valves}} valves are installed among {{total}} locations. 
+            Installation Rule: maximum {{n}} valves between users.
+        </p>
+    </div>
+    <ul class="list-group">
+        {% for key, installed in valves.items() %}
+            {% if installed == 1 %}
+                <li class="list-group-item list-group-item-success">{{key}}: installed</li>
+            {% else %}
+                <li class="list-group-item list-group-item-dark">{{key}}: not installed</li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+</div><!--/.col-xs-6.col-lg-6-->
+{% endblock %}
